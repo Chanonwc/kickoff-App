@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:webboradkakkak/screen/login_screen.dart';
+import '../screen/login_screen.dart';
 import '../constant/my_constant.dart';
 
 

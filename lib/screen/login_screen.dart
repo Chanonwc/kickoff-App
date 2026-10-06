@@ -1,8 +1,9 @@
+import 'package:Kikoff/screen/Home_screen_new.dart';
+import 'package:Kikoff/screen/signup_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:webboradkakkak/constant/my_constant.dart';
-import 'package:webboradkakkak/screen/signup_screen.dart'; 
-import 'package:webboradkakkak/screen/Home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '/constant/my_constant.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -21,13 +22,31 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
     super.dispose();
   }
-// 1. ฟังก์ชัน signIn (ปรับการส่งค่า)
+// 1. ฟังก์ชัน signIn (ปรับการส่งค่า) + Firebase Firestore
 Future<void> signIn() async {
   try {
     final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
     );
+    
+    final uid = credential.user!.uid;
+    
+    // ดึง/อัปเดต user data จาก Firestore
+    final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+    final userDoc = await userRef.get();
+    
+    if (!userDoc.exists) {
+      // ถ้ยังไม่มี user doc ให้สร้างใหม่
+      await userRef.set({
+        'displayName': credential.user?.displayName ?? 'User',
+        'email': credential.user?.email,
+        'phone': '',
+        'role': 'user',
+        'avatarUrl': '',
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    }
     
     // สำเร็จ: ไอคอนเขียว
     _showCenteredSnackBar(
@@ -40,7 +59,7 @@ Future<void> signIn() async {
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) =>  const HomeScreen()),
     );
   } on FirebaseAuthException catch (e) {
     // ล้มเหลว: ไอคอนแดง + ข้อความสากล

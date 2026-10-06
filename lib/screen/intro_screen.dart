@@ -1,9 +1,9 @@
+import 'package:Kikoff/screen/Home_screen_new.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:webboradkakkak/screen/profile_screen.dart';
-import 'package:webboradkakkak/screen/Home_screen.dart';
-import 'package:webboradkakkak/screen/login_screen.dart';
+import 'login_screen.dart';
+import 'fields_list.dart';
 class IntroScreen extends StatelessWidget {
   IntroScreen({super.key});
 
@@ -32,21 +32,21 @@ class IntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // กำหนดรายละเอียดแต่ละหน้า
+    // ปรับปรุงเนื้อหาให้เกี่ยวกับแอป KickOff
     final List<PageViewModel> pages = [
       PageViewModel(
-        title: "Welcome to Barcelona FC",
-        body: "Your gateway to the world of football.",
+        title: "ยินดีต้อนรับสู่ KickOff",
+        body: "แอปพลิเคชันจองสนามฟุตบอลที่ง่ายและรวดเร็วที่สุดสำหรับแฟนบอลตัวจริง",
         image: _buildFullscreenImage('lib/images/page-1.jpg'),
         decoration: PageDecoration(
-          fullScreen: true, // ทำให้ภาพเต็มจอ
+          fullScreen: true,
           titleTextStyle: titleStyle,
           bodyTextStyle: bodyStyle,
         ),
       ),
       PageViewModel(
-        title: "What is Barcelona FC?",
-        body: "Barcelona FC is a world-renowned football club based in Barcelona, Spain. It is one of the most successful and popular football clubs in the world.",
+        title: "จองสนามได้ทันใจ",
+        body: "เลือกสนามที่คุณชอบ ระบุวันเวลาที่ต้องการ แล้วกดจองได้ทันที พร้อมระบบคำนวณราคาอัตโนมัติ",
         image: _buildFullscreenImage('lib/images/page-2.jpg'),
         decoration: PageDecoration(
           fullScreen: true,
@@ -55,8 +55,8 @@ class IntroScreen extends StatelessWidget {
         ),
       ),
       PageViewModel(
-        title: "Why Barcelona FC?",
-        body: "Barcelona FC offers several advantages over traditional football clubs, such as its user-friendly interface and interactive features.",
+        title: "ตรวจสอบตารางการใช้งาน",
+        body: "เช็คสถานะสนามว่างและจัดการประวัติการจองของคุณได้ในที่เดียว ไม่ต้องรอนาน",
         image: _buildFullscreenImage('lib/images/page-3.jpg'),
         decoration: PageDecoration(
           fullScreen: true,
@@ -82,29 +82,25 @@ class IntroScreen extends StatelessWidget {
         
         // ปุ่มควบคุม
         showSkipButton: true,
-        skip: Text('Skip', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        skip: const Text('ข้าม', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         
         showNextButton: true,
         next: Icon(Icons.arrow_forward, color: barcaGold),
         
         showDoneButton: true,
-        done: Text('Done', style: TextStyle(fontWeight: FontWeight.bold, color: barcaRed)),
+        done: Text('เริ่มเลย', style: TextStyle(fontWeight: FontWeight.bold, color: barcaGold)),
 
-        // เมื่อกด Done
+        // เมื่อกด Done หรือเริ่มใช้งาน
         onDone: () async {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('seen', true);
 
           if (context.mounted) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
             );
           }
         },
-
-        // ปรับแต่งสีพื้นหลังของปุ่มด้านล่าง (เผื่อกรณีภาพสว่างเกินไป)
-        // isBottomSafeArea: true,
-        // isTopSafeArea: true,
       ),
     );
   }
@@ -113,7 +109,7 @@ class IntroScreen extends StatelessWidget {
   Widget _buildFullscreenImage(String assetName) {
     return Image.asset(
       assetName,
-      fit: BoxFit.cover, // ขยายรูปให้เต็มพื้นที่โดยไม่เสียสัดส่วน
+      fit: BoxFit.cover, 
       height: double.infinity,
       width: double.infinity,
       alignment: Alignment.center,

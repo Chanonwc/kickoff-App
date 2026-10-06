@@ -1,8 +1,8 @@
+import 'package:Kikoff/screen/Home_screen_new.dart';
 import 'package:flutter/material.dart';
-import 'package:webboradkakkak/constant/my_constant.dart';
-import 'package:webboradkakkak/screen/Home_screen.dart';
+import '/constant/my_constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:webboradkakkak/firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -15,6 +15,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
@@ -25,6 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -46,7 +48,20 @@ void signUp() async {
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
     );
-    print("User registered: ${credential.user?.uid}");
+    
+    final uid = credential.user!.uid;
+    
+    // สร้าง user document ใน Firestore
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'displayName': _nameController.text.trim(),
+      'email': _emailController.text.trim(),
+      'phone': _phoneController.text.trim(),
+      'role': 'user',
+      'avatarUrl': '',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    print("User registered: $uid");
 
     // สำเร็จ: ไอคอนเขียว + พื้นหลังดำโปร่งใส
     _showCenteredSnackBar(
@@ -189,9 +204,16 @@ void signUp() async {
                     const SizedBox(height: 10),
                     _CustomUnderlineField(
                       controller: _emailController,
-                      labelText: 'Gmail / Phone',
+                      labelText: 'Email',
                       hintText: 'example@gmail.com',
                       suffixIcon: const Icon(Icons.email_outlined, size: 16, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 8),
+                    _CustomUnderlineField(
+                      controller: _phoneController,
+                      labelText: 'Phone',
+                      hintText: '0812345678',
+                      suffixIcon: const Icon(Icons.phone_outlined, size: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 8),
                     _CustomUnderlineField(
